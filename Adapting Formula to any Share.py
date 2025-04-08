@@ -42,7 +42,7 @@ Total_Amount_Invested = Share_Amount * current_price # Calcula o valor total inv
 
 if payments_per_year > 0: # Verifica se o número de pagamentos por ano é maior que 0
     average_frequency = 12 / payments_per_year  # Retorna a frequência média de pagamento em meses
-    dividend_per_payment = latest_dividend / payments_per_year  # Retorna quanto é pago em cada dividendo
+    dividend_per_payment = latest_dividend # / payments_per_year  # Retorna quanto é pago em cada dividendo
 else: # Se não houver pagamentos por ano, retorna zero
     average_frequency = 0
     dividend_per_payment = 0
@@ -51,24 +51,32 @@ Total_Dividends_Received = 0 # Inicializa o valor total de dividendos recebidos 
 Out_of_Pocket = 0 # Inicializa o valor total pago como 0
 
 for Month in range(1, Investment_Time + 1):  # Gera um loop pelo tempo definido pelo usuário
-    Dividend_Amount = 0 # Inicializa o valor do dividendo como 0 a cada mês
     Capital += Aportes  # Adiciona Aporte Mensal ao Capital todo mês
-    additional_shares = 0 # Inicia a variável de ações adicionais como 0 a cada mês
-
-    if average_frequency > 0 and Month % average_frequency == 0:  # Verifica se é um mês que paga dividendos
-        Dividend_Amount = Share_Amount * dividend_per_payment  # Verifica a quantidade de dividendos pagos
-        Capital += Dividend_Amount  # Adiciona os dividendos ao Capital
-        Total_Dividends_Received += Dividend_Amount # Adiciona os dividendos recebidos ao total de dividendos recebidos
+    additional_shares = 0  # Inicia a variável de ações adicionais como 0 a cada mês
 
     while Capital >= current_price:  # Realiza a compra de ações enquanto o capital for maior que o preço atual
         additional_shares = Capital // current_price  # Calcula quantas ações podem ser compradas
         Capital -= round(additional_shares * current_price, 2)  # Subtrai o valor das ações compradas do Capital
         Share_Amount += additional_shares  # Adiciona as ações compradas à quantidade total de ações
 
-    Total_Amount_Invested = Share_Amount * current_price # Calcula o valor total investido
-    Out_of_Pocket = Total_Amount_Invested - Total_Dividends_Received # Calcula o valor total pago, subtraindo os dividendos recebidos do valor total investido
-    
+    if average_frequency > 0 and (Month % round(average_frequency)) == 0:  # Verifica se é um mês que paga dividendos
+        Dividend_Amount = Share_Amount * dividend_per_payment  # Verifica a quantidade de dividendos pagos
+        Capital += Dividend_Amount  # Adiciona os dividendos ao Capital
+        Total_Dividends_Received += Dividend_Amount  # Adiciona os dividendos recebidos ao total de dividendos recebidos
+
+        while Capital >= current_price:  # Realiza a compra de ações enquanto o capital for maior que o preço atual
+            additional_shares = Capital // current_price  # Calcula quantas ações podem ser compradas
+            Capital -= round(additional_shares * current_price, 2)  # Subtrai o valor das ações compradas do Capital
+            Share_Amount += additional_shares  # Adiciona as ações compradas à quantidade total de ações
+    else:
+        Dividend_Amount = 0  # Zera os dividendos em meses que não há pagamento de dividendos
+
+    Total_Amount_Invested = Share_Amount * current_price  # Calcula o valor total investido
+    Out_of_Pocket = Total_Amount_Invested - Total_Dividends_Received  # Calcula o valor total pago, subtraindo os dividendos recebidos do valor total investido
+
     # Retorna os valores de cada mês
     print(f"Month {Month}: Remaining Capital = {Capital:.2f}, Total Shares = {math.floor(Share_Amount):.0f}, Total Dividend = {Dividend_Amount:.2f}, Total_Amount_Invested = {Total_Amount_Invested:.2f}")
     print()
-print(f"From a total of {Total_Amount_Invested:.2f} BRL invested, {Out_of_Pocket:.2f} came out of pocket and {Total_Dividends_Received:.2f} BRL were reinvested from dividends.")
+
+# CORRIGIR: Calculo do valor investido vs Valor de dividendos está errado
+# print(f"From a total of {Total_Amount_Invested:.2f} BRL invested, {Out_of_Pocket:.2f} came out of pocket and {Total_Dividends_Received:.2f} BRL were reinvested from dividends.")
