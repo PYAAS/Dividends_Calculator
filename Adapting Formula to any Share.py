@@ -1,6 +1,18 @@
 import yfinance as yf
 from dateutil.relativedelta import relativedelta # Permite cálculo de diferença entre datas
 import math 
+import locale
+locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')  # Set locale to Brazilian Portuguese
+import matplotlib.pyplot as plt # Importa biblioteca para gráficos
+from matplotlib.ticker import FuncFormatter
+
+# Inicializa listas para armazenar os valores mensais
+months = []
+capital_history = []
+share_amount_history = []
+dividend_history = []
+total_invested_history = []
+dividend_amount_history = []
 
 Capital = int(input("Digite o capital inicial para ser investido agora: "))  # Capital inicial
 Aportes = int(input("Digite quanto deseja investir mensalmente: ")) # Aporte Mensal
@@ -74,9 +86,64 @@ for Month in range(1, Investment_Time + 1):  # Gera um loop pelo tempo definido 
     Total_Amount_Invested = Share_Amount * current_price  # Calcula o valor total investido
     Out_of_Pocket = Total_Amount_Invested - Total_Dividends_Received  # Calcula o valor total pago, subtraindo os dividendos recebidos do valor total investido
 
+    # Armazena os valores mensais nas listas
+    months.append(Month)
+    capital_history.append(Capital)
+    share_amount_history.append(Share_Amount)
+    dividend_history.append(Total_Dividends_Received)
+    total_invested_history.append(Total_Amount_Invested)
+    dividend_amount_history.append(Dividend_Amount) 
+
+
     # Retorna os valores de cada mês
-    print(f"Month {Month}: Remaining Capital = {Capital:.2f}, Total Shares = {math.floor(Share_Amount):.0f}, Total Dividend = {Dividend_Amount:.2f}, Total_Amount_Invested = {Total_Amount_Invested:.2f}")
+    print(f"Month {Month}: Remaining Capital = {locale.currency(Capital, grouping=True)}, "
+        f"Total Shares = {math.floor(Share_Amount):.0f}, "
+        f"Total Dividend = {locale.currency(Dividend_Amount, grouping=True)}, "
+        f"Total_Amount_Invested = {locale.currency(Total_Amount_Invested, grouping=True)}")
     print()
+
+# Cria o gráfico ao final do loop
+fig, ax = plt.subplots(figsize=(12, 6))  # Define o tamanho do gráfico
+
+# Adiciona as linhas ao gráfico
+ax.plot(months, total_invested_history, label="Total Investido (BRL)", marker='o')
+ax.plot(months, dividend_history, label="Dividendos Recebidos (BRL)", marker='o')
+ax.plot(months, share_amount_history, label="Quantidade de Ações", marker='o')
+
+# Configurações do gráfico
+ax.set_title(f"Evolução dos Investimentos - {ticker}", fontsize=16)
+ax.set_xlabel("Meses", fontsize=12)
+ax.set_ylabel("Valores (BRL)", fontsize=12)
+ax.legend()
+ax.grid(True)
+# Formata os valores do eixo Y para exibir números completos
+ax.yaxis.set_major_formatter(FuncFormatter(lambda value, _: f"{value:,.0f}"))
+
+# Cria um gráfico separado para Dividend_Amount
+fig2, ax2 = plt.subplots(figsize=(12, 6))  # Define o tamanho do gráfico separado
+
+# Adiciona a linha ao gráfico separado
+ax2.plot(months, dividend_amount_history, label="Dividendos Mensais (BRL)", marker='o', linestyle='--', color='green')
+
+# Configurações do gráfico separado
+ax2.set_title(f"Evolução dos Dividendos Mensais - {ticker}", fontsize=16)
+ax2.set_xlabel("Meses", fontsize=12)
+ax2.set_ylabel("Dividendos Mensais (BRL)", fontsize=12)
+ax2.legend()
+ax2.grid(True)
+# Formata os valores do eixo Y para exibir números completos
+ax2.yaxis.set_major_formatter(FuncFormatter(lambda value, _: f"{value:,.0f}"))
+
+plt.show()  # Exibe o gráfico
 
 # CORRIGIR: Calculo do valor investido vs Valor de dividendos está errado
 # print(f"From a total of {Total_Amount_Invested:.2f} BRL invested, {Out_of_Pocket:.2f} came out of pocket and {Total_Dividends_Received:.2f} BRL were reinvested from dividends.")
+
+# possíveis melhorias:
+# front para o usuário
+# melhorar o tratamento de erros
+# adicionar mais informações sobre a ação, como dividend yield, P/L, etc.
+# permitir valores decimais no Capital e Aportes
+# adicionar opção de reinvestir dividendos ou não
+# validar ação com try catch
+
