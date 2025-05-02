@@ -48,9 +48,12 @@ print(f"{ticker} - Current Price: {current_price:.2f} BRL") # Exibe o preço atu
 print(f"{ticker} - Latest Dividend: {latest_dividend:.2f} BRL") # Exibe o valor do último dividendo pago
 print()
 
-Share_Amount = Capital // current_price # Calcula a quantidade de ações atuais
-Dividend_Amount = Share_Amount * latest_dividend # Calcula o valor total dos dividendos pagos
-Total_Amount_Invested = Share_Amount * current_price # Calcula o valor total investido
+Share_Amount = 0
+Dividend_Amount = 0
+Total_Amount_Invested = 0
+#Share_Amount = Capital // current_price # Calcula a quantidade de ações atuais
+#Dividend_Amount = Share_Amount * latest_dividend # Calcula o valor total dos dividendos pagos
+#Total_Amount_Invested = Share_Amount * current_price # Calcula o valor total investido
 
 if payments_per_year > 0: # Verifica se o número de pagamentos por ano é maior que 0
     average_frequency = 12 / payments_per_year  # Retorna a frequência média de pagamento em meses
